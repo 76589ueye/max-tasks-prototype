@@ -90,11 +90,7 @@ struct PlansView: View {
             )
         }
         
-        let encoder = JSONEncoder()
-        if let data = try? encoder.encode(newPlan),
-           let dict = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
-            Persistence.shared.applyChange(table: "plans", type: "INSERT", entityId: newId, data: newPlan, rawData: dict)
-        }
+        Persistence.shared.savePlan(newPlan)
         
         loadData()
     }
