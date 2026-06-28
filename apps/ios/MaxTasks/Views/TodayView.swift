@@ -198,7 +198,7 @@ struct TimelineRow: View {
         
         HStack {
             Text(formattedHour)
-                .font(.system(.caption, design: .monospace))
+                .font(.system(.caption, design: .monospaced))
                 .foregroundColor(.secondary)
                 .frame(width: 48, alignment: .leading)
             
