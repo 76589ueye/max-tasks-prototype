@@ -2,9 +2,11 @@ name: Max Tasks CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches:
+      - '**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - '**'
 
 jobs:
   test-api:
@@ -43,15 +45,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Build Unsigned iOS App (.app)
-        run: |
-          xcodebuild -project apps/ios/MaxTasks.xcodeproj \
-            -scheme MaxTasks \
-            -sdk iphoneos \
-            -configuration Release \
-            CONFIGURATION_BUILD_DIR=../../build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            clean build
+        run: xcodebuild -project apps/ios/MaxTasks.xcodeproj -scheme MaxTasks -sdk iphoneos -configuration Release CONFIGURATION_BUILD_DIR=../../build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
 
       - name: Package Unsigned IPA
         run: |
