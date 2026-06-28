@@ -1,7 +1,7 @@
 import { SyncMutation, SyncRequest, SyncResponse } from 'shared-types';
 import { getStoreItems, setStoreItems, putStoreItem, deleteStoreItem } from './db';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_URL = '/api/v1';
 
 export class SyncEngine {
   static isOnline(): boolean {
