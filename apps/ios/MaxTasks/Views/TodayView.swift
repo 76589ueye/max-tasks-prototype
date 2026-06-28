@@ -74,31 +74,8 @@ struct TodayView: View {
                 
                 // Timeline Schedule
                 Section(header: Text("Timeline Schedule")) {
-                    ForEach(7..<22) { hour in
-                        let formattedHour = String(format: "%02d:00", hour)
-                        let hourEvent = events.first(where: {
-                            let startHour = Calendar.current.component(.hour, from: parseDate(dateStr: $0.startDate))
-                            return startHour == hour
-                        })
-                        
-                        HStack {
-                            Text(formattedHour)
-                                .font(.system(.caption, design: .monospace))
-                                .foregroundColor(.secondary)
-                                .frame(width: 48, alignment: .leading)
-                            
-                            if let event = hourEvent {
-                                Text(event.title)
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .padding(.vertical, 4)
-                                    .padding(.horizontal, 8)
-                                    .background(Color.accentColor.opacity(0.15))
-                                    .cornerRadius(6)
-                            } else {
-                                Spacer()
-                            }
-                        }
+                    ForEach(7..<22, id: \.self) { hour in
+                        TimelineRow(hour: hour, events: events)
                     }
                 }
             }
@@ -204,5 +181,43 @@ struct TaskRow: View {
                 Label(task.status == "COMPLETED" ? "Mark Active" : "Mark Completed", systemImage: "checkmark.circle")
             }
         }
+    }
+}
+
+struct TimelineRow: View {
+    let hour: Int
+    let events: [CalendarEvent]
+    
+    var body: some View {
+        let formattedHour = String(format: "%02d:00", hour)
+        let hourEvent = events.first(where: {
+            let start = parseDate(dateStr: $0.startDate)
+            let startHour = Calendar.current.component(.hour, from: start)
+            return startHour == hour
+        })
+        
+        HStack {
+            Text(formattedHour)
+                .font(.system(.caption, design: .monospace))
+                .foregroundColor(.secondary)
+                .frame(width: 48, alignment: .leading)
+            
+            if let event = hourEvent {
+                Text(event.title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 8)
+                    .background(Color.accentColor.opacity(0.15))
+                    .cornerRadius(6)
+            } else {
+                Spacer()
+            }
+        }
+    }
+    
+    private func parseDate(dateStr: String) -> Date {
+        let formatter = ISO8601DateFormatter()
+        return formatter.date(from: dateStr) ?? Date()
     }
 }
