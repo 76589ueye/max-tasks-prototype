@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import crypto from 'crypto';
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
