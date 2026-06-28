@@ -41,11 +41,26 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Xcode
-        uses: actions/setup-xcode@v1
-        with:
-          xcode-version: 'latest-stable'
-      - name: Build Swift Code
+
+      - name: Build Unsigned iOS App (.app)
         run: |
-          cd apps/ios
-          swift build -v || echo "Project folder requires Xcode workspace signing configuration for full iOS binary build"
+          xcodebuild -project apps/ios/MaxTasks.xcodeproj \
+            -scheme MaxTasks \
+            -sdk iphoneos \
+            -configuration Release \
+            CONFIGURATION_BUILD_DIR=../../build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            clean build
+
+      - name: Package Unsigned IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/MaxTasks.app Payload/
+          zip -r MaxTasks.ipa Payload/
+
+      - name: Upload Unsigned IPA Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: MaxTasks-Unsigned-IPA
+          path: MaxTasks.ipa

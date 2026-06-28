@@ -81,8 +81,8 @@ export class SyncEngine {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Cookies are automatically sent since credentials are HTTP-only
         },
+        credentials: 'include', // Ensure HTTP-Only session cookies are transmitted
         body: JSON.stringify({
           lastSyncTimestamp,
           mutations: queue.map(q => ({
@@ -152,6 +152,7 @@ export class SyncEngine {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method,
       headers,
+      credentials: 'include', // Ensure HTTP-Only session cookies are transmitted
       body: body ? JSON.stringify(body) : undefined
     });
 
