@@ -184,8 +184,8 @@ export class SyncEngine {
     if (typeof window === 'undefined') return;
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) return;
 
-    // Connect to local WebSocket on Express server
-    const wsUrl = 'ws://localhost:8080';
+    const wsHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+    const wsUrl = `ws://${wsHost}:8080`;
     try {
       this.ws = new WebSocket(wsUrl);
 

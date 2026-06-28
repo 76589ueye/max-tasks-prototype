@@ -152,7 +152,7 @@ struct LoginView: View {
         errorMessage = ""
         
         let path = isSignup ? "signup" : "login"
-        guard let url = URL(string: "http://localhost:8080/api/v1/auth/\(path)") else { return }
+        guard let url = URL(string: "http://192.168.1.4:8080/api/v1/auth/\(path)") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

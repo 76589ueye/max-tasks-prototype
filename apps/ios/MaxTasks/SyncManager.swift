@@ -2,7 +2,7 @@ import Foundation
 
 public class SyncManager {
     public static let shared = SyncManager()
-    private let apiURL = "http://localhost:8080/api/v1/sync"
+    private let apiURL = "http://192.168.1.4:8080/api/v1/sync"
     private var isSyncing = false
     private var webSocketTask: URLSessionWebSocketTask?
     private var isWsListening = false
@@ -12,7 +12,7 @@ public class SyncManager {
     public func initRealtimeWebSocket() {
         guard !isWsListening else { return }
         guard let token = KeychainHelper.shared.read(forKey: "max_tasks_token") else { return }
-        guard let url = URL(string: "ws://localhost:8080?token=\(token)") else { return }
+        guard let url = URL(string: "ws://192.168.1.4:8080?token=\(token)") else { return }
         
         let session = URLSession(configuration: .default)
         webSocketTask = session.webSocketTask(with: url)
