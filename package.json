@@ -1,0 +1,26 @@
+{
+  "name": "max-tasks-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w services/api",
+    "dev:web": "npm run dev -w apps/web",
+    "build:api": "npm run build -w services/api",
+    "build:web": "npm run build -w apps/web",
+    "test:api": "npm run test -w services/api",
+    "test:web": "npm run test -w apps/web",
+    "db:migrate": "npm run db:migrate -w services/api",
+    "db:seed": "npm run db:seed -w services/api",
+    "lint": "npm run lint -ws",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  }
+}

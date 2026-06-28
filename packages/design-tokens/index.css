@@ -1,0 +1,90 @@
+:root {
+  /* Colors */
+  --color-bg: #0B0C0F;
+  --color-surface-low: #0F1014;
+  --color-surface: #14161D;
+  --color-surface-high: #1E212A;
+  --color-surface-hover: #262B37;
+  
+  --color-primary: #FF4D2A;      /* Ember */
+  --color-primary-hover: #E03E1B;
+  --color-primary-dim: rgba(255, 77, 42, 0.15);
+  
+  --color-gold: #E6AF2E;         /* Muted Gold */
+  --color-purple: #8B80F0;       /* Muted Purple */
+  --color-purple-gray: #6E6888;
+  
+  /* Text */
+  --color-text-primary: #E3E4E6;  /* Off-white */
+  --color-text-secondary: #9B9FA9;
+  --color-text-muted: #5F6470;
+  --color-text-on-primary: #000000;
+  
+  /* Statuses */
+  --color-status-inbox: #9B9FA9;
+  --color-status-planned: #3B82F6;
+  --color-status-in-progress: #F59E0B;
+  --color-status-completed: #10B981;
+  --color-status-late: #EF4444;
+  --color-status-critical: #F43F5E;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  /* Borders */
+  --border-color: rgba(227, 228, 230, 0.08);
+  --border-color-focus: rgba(255, 77, 42, 0.5);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.8);
+  
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Background Details */
+  --grid-line: rgba(227, 228, 230, 0.03);
+}
+
+/* Base resets & theme utility styles */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  background-image: 
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: center center;
+}
+
+/* Subtle premium grain effect container overlay class */
+.premium-grain {
+  position: relative;
+}
+.premium-grain::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%; height: 100%;
+  opacity: 0.015;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}

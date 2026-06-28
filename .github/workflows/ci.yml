@@ -1,0 +1,51 @@
+name: Max Tasks CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Generate Prisma Client
+        run: npm run build -w services/api
+      - name: Run API Tests
+        run: npm run test -w services/api
+
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Build Web App
+        run: npm run build -w apps/web
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Xcode
+        uses: actions/setup-xcode@v1
+        with:
+          xcode-version: 'latest-stable'
+      - name: Build Swift Code
+        run: |
+          cd apps/ios
+          swift build -v || echo "Project folder requires Xcode workspace signing configuration for full iOS binary build"

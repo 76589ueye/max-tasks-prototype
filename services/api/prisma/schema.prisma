@@ -1,0 +1,319 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  workspaces   Workspace[]
+  comments     Comment[]
+  activityLogs ActivityLog[]
+}
+
+model Workspace {
+  id              String          @id @default(uuid())
+  name            String
+  ownerId         String
+  owner           User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  projects        Project[]
+  plans           Plan[]
+  tasks           Task[]
+  notes           Note[]
+  folders         Folder[]
+  tags            Tag[]
+  calendarEvents  CalendarEvent[]
+  timeBlocks      TimeBlock[]
+  habits          Habit[]
+  reminders       Reminder[]
+  focusSessions   FocusSession[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  serverUpdatedAt DateTime        @default(now()) @updatedAt
+  revision        Int             @default(1)
+}
+
+model Project {
+  id              String          @id @default(uuid())
+  name            String
+  description     String?
+  icon            String?
+  color           String?
+  status          String          @default("ON_TRACK") // ON_TRACK, AT_RISK, DELAYED, COMPLETED
+  startDate       DateTime?
+  endDate         DateTime?
+  workspaceId     String
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks           Task[]
+  calendarEvents  CalendarEvent[]
+  comments        Comment[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  serverUpdatedAt DateTime        @default(now()) @updatedAt
+  revision        Int             @default(1)
+}
+
+model Plan {
+  id              String      @id @default(uuid())
+  title           String
+  vision          String?
+  type            String      @default("PERSONAL") // STUDY, TRAVEL, PROJECT_LAUNCH, SPORTS, PERSONAL
+  workspaceId     String
+  workspace       Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  startDate       DateTime?
+  endDate         DateTime?
+  progress        Int         @default(0)
+  tasks           Task[]
+  milestones      Milestone[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  serverUpdatedAt DateTime    @default(now()) @updatedAt
+  revision        Int         @default(1)
+}
+
+model Milestone {
+  id              String    @id @default(uuid())
+  planId          String
+  plan            Plan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  title           String
+  isCompleted     Boolean   @default(false)
+  dueDate         DateTime?
+  workspaceId     String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  serverUpdatedAt DateTime  @default(now()) @updatedAt
+  revision        Int       @default(1)
+}
+
+model Task {
+  id               String          @id @default(uuid())
+  title            String
+  description      String?
+  status           String          @default("INBOX") // INBOX, PLANNED, IN_PROGRESS, COMPLETED, ARCHIVED
+  priority         String          @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  startDate        DateTime?
+  dueDate          DateTime?
+  timeOfDay        String?
+  expectedDuration Int?
+  recurrence       String          @default("NONE") // NONE, DAILY, WEEKLY, MONTHLY
+  projectId        String?
+  project          Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  planId           String?
+  plan             Plan?           @relation(fields: [planId], references: [id], onDelete: SetNull)
+  workspaceId      String
+  workspace        Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  subtasks         Subtask[]
+  checklistItems   ChecklistItem[]
+  timeBlocks       TimeBlock[]
+  reminders        Reminder[]
+  attachments      Attachment[]
+  comments         Comment[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  serverUpdatedAt  DateTime        @default(now()) @updatedAt
+  completedAt      DateTime?
+  revision         Int             @default(1)
+}
+
+model Subtask {
+  id              String   @id @default(uuid())
+  taskId          String
+  task            Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  title           String
+  isCompleted     Boolean  @default(false)
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  serverUpdatedAt DateTime @default(now()) @updatedAt
+  revision        Int      @default(1)
+}
+
+model ChecklistItem {
+  id              String   @id @default(uuid())
+  taskId          String
+  task            Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  title           String
+  isCompleted     Boolean  @default(false)
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  serverUpdatedAt DateTime @default(now()) @updatedAt
+  revision        Int      @default(1)
+}
+
+model Folder {
+  id              String    @id @default(uuid())
+  name            String
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  notes           Note[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  serverUpdatedAt DateTime  @default(now()) @updatedAt
+  revision        Int       @default(1)
+}
+
+model Note {
+  id              String       @id @default(uuid())
+  title           String
+  content         String
+  folderId        String?
+  folder          Folder?      @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  workspaceId     String
+  workspace       Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  isPinned        Boolean      @default(false)
+  attachments     Attachment[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  serverUpdatedAt DateTime     @default(now()) @updatedAt
+  revision        Int          @default(1)
+}
+
+model Tag {
+  id          String    @id @default(uuid())
+  name        String
+  color       String?
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model CalendarEvent {
+  id              String    @id @default(uuid())
+  title           String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime
+  isAllDay        Boolean   @default(false)
+  projectId       String?
+  project         Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  recurrence      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  serverUpdatedAt DateTime  @default(now()) @updatedAt
+  revision        Int       @default(1)
+}
+
+model TimeBlock {
+  id          String    @id @default(uuid())
+  taskId      String?
+  task        Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  title       String
+  startDate   DateTime
+  endDate     DateTime
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  serverUpdatedAt DateTime  @default(now()) @updatedAt
+  revision        Int       @default(1)
+}
+
+model Habit {
+  id              String     @id @default(uuid())
+  name            String
+  frequency       String     @default("DAILY") // DAILY, WEEKLY
+  streak          Int        @default(0)
+  reminderTime    String?
+  workspaceId     String
+  workspace       Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  logs            HabitLog[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  serverUpdatedAt DateTime   @default(now()) @updatedAt
+  revision        Int        @default(1)
+}
+
+model HabitLog {
+  id              String   @id @default(uuid())
+  habitId         String
+  habit           Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date            String   // YYYY-MM-DD
+  completed       Boolean  @default(false)
+  serverUpdatedAt DateTime @default(now()) @updatedAt
+}
+
+model Reminder {
+  id              String    @id @default(uuid())
+  taskId          String?
+  task            Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  remindAt        DateTime
+  isSent          Boolean   @default(false)
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  serverUpdatedAt DateTime  @default(now()) @updatedAt
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  taskId      String?
+  task        Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  noteId      String?
+  note        Note?    @relation(fields: [noteId], references: [id], onDelete: SetNull)
+  fileName    String
+  fileUrl     String
+  fileSize    Int
+  mimeType    String
+  createdAt   DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  taskId    String?
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model FocusSession {
+  id              String    @id @default(uuid())
+  taskId          String?
+  duration        Int
+  notes           String?
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  serverUpdatedAt DateTime  @default(now()) @updatedAt
+  revision        Int       @default(1)
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action     String
+  entityType String
+  entityId   String
+  details    String?
+  createdAt  DateTime @default(now())
+}
+
+model DeletedRecord {
+  id          String   @id @default(uuid())
+  table       String
+  entityId    String
+  workspaceId String
+  deletedAt   DateTime @default(now())
+}
+
+model ConflictRecord {
+  id          String   @id @default(uuid())
+  table       String
+  entityId    String
+  workspaceId String
+  clientData  String
+  serverData  String
+  resolved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
