@@ -77,11 +77,18 @@ export class SyncEngine {
     const lastSyncTimestamp = Number(localStorage.getItem('last_sync_timestamp') || '0');
 
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      const token = localStorage.getItem('max_tasks_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_URL}/sync`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include', // Ensure HTTP-Only session cookies are transmitted
         body: JSON.stringify({
           lastSyncTimestamp,
@@ -148,6 +155,13 @@ export class SyncEngine {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
+
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('max_tasks_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
       method,
